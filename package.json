@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/nas5w/random-word-slugs#readme",
   "devDependencies": {
-    "typescript": "^4.1.3",
+    "typescript": "^5.9.3",
     "@types/bun": "latest"
   },
   "private": true

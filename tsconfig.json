@@ -7,7 +7,15 @@
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "maxNodeModuleJsDepth": 0,
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
-  "exclude": ["node_modules", "dist", "test"]
+  "include": [
+    "index.ts",
+    "words.ts"
+  ],
+  "exclude": ["node_modules", "dist", "test", "benchmarks"]
 }
