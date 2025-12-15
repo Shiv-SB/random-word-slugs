@@ -1,5 +1,5 @@
 import { generateSlug, RandomWordOptions, totalUniqueSlugs } from "../index";
-import { Adjectives, Categories, getWordsByCategory, isWordValid, Nouns, PartsOfSpeech, wordList } from '../words';
+import { Adjectives, Categories, getWordsByCategory, isWordValid, Nouns, PartsOfSpeech, wordList, wordListSet } from '../words';
 import { describe, expect, test } from "bun:test";
 
 const allAdjectives: Adjectives[] = wordList.adjective.map(({ word }) => word)
@@ -92,6 +92,12 @@ describe("wordListSet", () => {
       expect(isWordValid(word)).toBeFalse();
     });
   });
+  test("should not contain special characters", () => {
+    const validString = /^[a-z]+$/; // no whitespace, numbers, uppercase, special chars
+    wordListSet.forEach((word) => {
+      expect(validString.test(word)).toBeTrue();
+    });
+  })
 });
 
 describe("generateSlug", () => {
