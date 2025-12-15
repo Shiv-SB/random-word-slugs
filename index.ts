@@ -46,12 +46,30 @@ export function generateSlug<N extends number>(
       opts.partsOfSpeech[i],
       opts.categories[partOfSpeech]
     );
-    const rand = candidates[Math.floor(Math.random() * candidates.length)];
+    const rand = candidates[getRandomInt(0, candidates.length - 1)];
     words.push(rand);
   }
 
   return formatter(words, opts.format);
 }
+
+export function getRandomInt(min: number, max: number): number {
+  const range = max - min + 1;
+
+  const maxUint32 = 0xffffffff;
+  const limit = ((maxUint32 + 1) / range | 0) * range;
+
+  const buf = new Uint32Array(1);
+  let x: number;
+
+  do {
+    crypto.getRandomValues(buf);
+    x = buf[0];
+  } while (x >= limit);
+
+  return min + (x % range);
+}
+
 
 function getDefaultPartsOfSpeech<N extends number>(length: N) {
   const partsOfSpeech = [];
