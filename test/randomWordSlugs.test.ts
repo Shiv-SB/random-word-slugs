@@ -1,6 +1,6 @@
 import { generateSlug, RandomWordOptions, totalUniqueSlugs } from "../index";
 import { Adjectives, Categories, getWordsByCategory, Nouns, PartsOfSpeech, wordList } from '../words';
-import { describe, expect, it, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 
 const allAdjectives: Adjectives[] = wordList.adjective.map(({ word }) => word)
 const allNouns: Nouns[] = wordList.noun.map(({ word }) => word);
@@ -163,12 +163,12 @@ describe("generateSlug", () => {
 });
 
 describe("totalUniqueSlugs", () => {
-  it("should tally up total slugs", () => {
+  test("should tally up total slugs", () => {
     const num = totalUniqueSlugs();
     const actualTotal = numAdjectives * numAdjectives * numNouns;
     expect(num).toBe(actualTotal);
   });
-  it("should tally slugs in subset of categories", () => {
+  test("should tally slugs in subset of categories", () => {
     const num = totalUniqueSlugs(4, {
       categories: {
         noun: ["animals", "people"],
