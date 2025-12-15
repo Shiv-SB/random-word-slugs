@@ -637,6 +637,8 @@ export const wordList = {
 };
 
 export type WordList = typeof wordList;
+export type Nouns = WordList["noun"][number]["word"];
+export type Adjectives = WordList["adjective"][number]["word"];
 
 export type Categories = {
   [K in keyof WordList]: WordList[K][number]["categories"][number];

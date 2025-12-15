@@ -73,8 +73,8 @@ export function getRandomInt(min: number, max: number): number {
 
 function getDefaultPartsOfSpeech<
   N extends number
->(length: N): FixedLengthArray<"noun" | "adjective", N> {
-  const partsOfSpeech: ("noun" | "adjective")[] = [];
+>(length: N): FixedLengthArray<PartsOfSpeech, N> {
+  const partsOfSpeech: PartsOfSpeech[] = [];
   for (let i = 0; i < length - 1; i++) {
     partsOfSpeech.push("adjective");
   }

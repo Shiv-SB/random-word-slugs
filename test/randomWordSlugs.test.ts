@@ -1,9 +1,9 @@
 import { generateSlug, RandomWordOptions, totalUniqueSlugs } from "../index";
-import { Categories, PartsOfSpeech, wordList } from "../words";
-import { describe, expect, it } from "bun:test";
+import { Adjectives, Categories, Nouns, PartsOfSpeech, wordList } from "../words";
+import { describe, expect, it, test } from "bun:test";
 
-const allAdjectives = wordList.adjective.map(({ word }) => word) as string[];
-const allNouns = wordList.noun.map(({ word }) => word) as string[];
+const allAdjectives: Adjectives[] = wordList.adjective.map(({ word }) => word)
+const allNouns: Nouns[] = wordList.noun.map(({ word }) => word);
 const numAdjectives = allAdjectives.length;
 const numNouns = allNouns.length;
 
@@ -11,25 +11,11 @@ function checkWordInCategories<P extends PartsOfSpeech>(
   partOfSpeech: P,
   word: string,
   categories: Categories[P][]
-) {
+): boolean {
   const cats = new Set(categories);
-  const wordCategories = (() => {
-    for (let w of wordList[partOfSpeech]) {
-      if (w.word === word) {
-        return w.categories;
-      }
-    }
-  })();
-
-  return wordCategories!.some((cat: any) => cats.has(cat));
-}
-
-function test(name: string, fn: () => void) {
-  it(name, () => {
-    for (let i = 0; i < 1000; i++) {
-      fn();
-    }
-  });
+  const entry = wordList[partOfSpeech].find(w => w.word === word);
+  if (!entry) return false;
+  return entry.categories.some(cat => cats.has(cat));
 }
 
 describe("wordList", () => {
@@ -64,22 +50,29 @@ describe("wordList", () => {
 });
 
 describe("generateSlug", () => {
+  describe("generates n random kebab-cased words by default", () => {
+    const limit = 10;
+    const arr = Array.from({length: limit}, (_, i) => i + 1); // 1, 2, ...
+
+    test.each(arr)("should generate slug with %p words", (i) => {
+      const slug = generateSlug(i);
+      const parts = slug.split("-");
+      expect(parts).toBeArrayOfSize(i);
+    });
+  });
+  test("providing 0 number of words should fall back to default", () => {
+    const slug = generateSlug(0);
+    const parts = slug.split("-");
+    // Should probably avoid this magic number and export the default val from index.ts
+    expect(parts).toBeArrayOfSize(3);
+  });
   test("generates three random kebab-cased words by default", () => {
     const slug = generateSlug();
     const parts = slug.split("-");
-    expect(parts.length).toBe(3);
-    expect(allAdjectives.includes(parts[0])).toBe(true);
-    expect(allAdjectives.includes(parts[1])).toBe(true);
-    expect(allNouns.includes(parts[2])).toBe(true);
-  });
-  test("generates four random kebab-cased words if requested", () => {
-    const slug = generateSlug(4);
-    const parts = slug.split("-");
-    expect(parts.length).toBe(4);
-    expect(allAdjectives.includes(parts[0])).toBe(true);
-    expect(allAdjectives.includes(parts[1])).toBe(true);
-    expect(allAdjectives.includes(parts[2])).toBe(true);
-    expect(allNouns.includes(parts[3])).toBe(true);
+    expect(parts).toBeArrayOfSize(3);
+    expect(allAdjectives).toContain<Nouns>(parts[0]);
+    expect(allAdjectives).toContain<Nouns>(parts[1]);
+    expect(allNouns).toContain<Nouns>(parts[2]);
   });
   test("allows user to specify word categories", () => {
     const options: RandomWordOptions<3> = {
@@ -96,17 +89,17 @@ describe("generateSlug", () => {
         parts[0],
         options!.categories!.adjective!
       )
-    ).toBe(true);
+    ).toBeTrue();
     expect(
       checkWordInCategories(
         "adjective",
         parts[1],
         options!.categories!.adjective!
       )
-    ).toBe(true);
+    ).toBeTrue();
     expect(
       checkWordInCategories("noun", parts[2], options!.categories!.noun!)
-    ).toBe(true);
+    ).toBeTrue();
   });
   test("should format as camelCase", () => {
     const slug = generateSlug(3, { format: "camel" });
@@ -114,41 +107,42 @@ describe("generateSlug", () => {
     const splitRegex = new RegExp(second + "(.+)");
     const [first, third] = slug.split(splitRegex);
     expect(first[0]).toBe(first[0].toLowerCase());
-    expect(allAdjectives.includes(first)).toBe(true);
+    expect(allAdjectives).toContain<Adjectives>(first);
     expect(second[0]).toBe(second[0].toUpperCase());
-    expect(allAdjectives.includes(second.toLowerCase())).toBe(true);
+    expect(allAdjectives).toContain<Adjectives>(second.toLowerCase());
     expect(third[0]).toBe(third[0].toUpperCase());
-    expect(allNouns.includes(third.toLowerCase())).toBe(true);
+    expect(allNouns).toContain<Nouns>(third.toLowerCase());
   });
   test("should format as Title Case", () => {
     const slug = generateSlug(3, { format: "title" });
     const [first, second, third] = slug.split(" ");
     expect(first[0]).toBe(first[0].toUpperCase());
-    expect(allAdjectives.includes(first.toLowerCase())).toBe(true);
+
+    expect(allAdjectives).toContain<Adjectives>(first.toLowerCase());
     expect(second[0]).toBe(second[0].toUpperCase());
-    expect(allAdjectives.includes(second.toLowerCase())).toBe(true);
+    expect(allAdjectives).toContain<Adjectives>(second.toLowerCase());
     expect(third[0]).toBe(third[0].toUpperCase());
-    expect(allNouns.includes(third.toLowerCase())).toBe(true);
+    expect(allNouns).toContain<Nouns>(third.toLowerCase());
   });
   test("should format as lower case", () => {
     const slug = generateSlug(3, { format: "lower" });
     const [first, second, third] = slug.split(" ");
     expect(first[0]).toBe(first[0].toLowerCase());
-    expect(allAdjectives.includes(first)).toBe(true);
+    expect(allAdjectives).toContain<Adjectives>(first);
     expect(second[0]).toBe(second[0].toLowerCase());
-    expect(allAdjectives.includes(second)).toBe(true);
+    expect(allAdjectives).toContain<Adjectives>(second);
     expect(third[0]).toBe(third[0].toLowerCase());
-    expect(allNouns.includes(third)).toBe(true);
+    expect(allNouns).toContain<Nouns>(third);
   });
   test("should format as Sentence case", () => {
     const slug = generateSlug(3, { format: "sentence" });
     const [first, second, third] = slug.split(" ");
     expect(first[0]).toBe(first[0].toUpperCase());
-    expect(allAdjectives.includes(first.toLowerCase())).toBe(true);
+    expect(allAdjectives).toContain<Adjectives>(first.toLowerCase());
     expect(second[0]).toBe(second[0].toLowerCase());
-    expect(allAdjectives.includes(second)).toBe(true);
+    expect(allAdjectives).toContain<Adjectives>(second);
     expect(third[0]).toBe(third[0].toLowerCase());
-    expect(allNouns.includes(third)).toBe(true);
+    expect(allNouns).toContain<Nouns>(third);
   });
 });
 
