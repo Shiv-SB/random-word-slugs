@@ -23,11 +23,22 @@ export type RandomWordOptions<N extends number> = Partial<
   Options<PartsOfSpeech, N>
 >;
 
+/**
+ * 
+ * @param numberOfWords Specify the number of words to use when generating the slug.
+ * If an invalid number (e.g. NaN, -3) is detected, it will fallback to a default
+ * value of 3.
+ * @param options 
+ * @returns 
+ */
 export function generateSlug<N extends number>(
   numberOfWords?: N,
   options?: Partial<Options<PartsOfSpeech, N>>
 ): string {
-  const numWords = numberOfWords || DEFAULT_NUMBER_OF_WORDS;
+  let numWords = numberOfWords || DEFAULT_NUMBER_OF_WORDS;
+  if (numWords < 0 || !Number.isFinite(numWords)) {
+    numWords = DEFAULT_NUMBER_OF_WORDS;
+  }
   const defaultOptions: Options<PartsOfSpeech, typeof numWords> = {
     partsOfSpeech: getDefaultPartsOfSpeech(numWords),
     categories: {},

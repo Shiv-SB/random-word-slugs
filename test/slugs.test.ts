@@ -29,11 +29,19 @@ describe("generateSlug", () => {
       expect(parts).toBeArrayOfSize(i);
     });
   });
-  test("providing 0 number of words should fall back to default", () => {
-    const slug = generateSlug(0);
-    const parts = slug.split("-");
-    // Should probably avoid this magic number and export the default val from index.ts
-    expect(parts).toBeArrayOfSize(3);
+  describe("providing invalid number of words should fall back to default", () => {
+    const numbers: number[] = [
+      0,
+      -1,
+      -100,
+      NaN,
+      Infinity,
+      -Infinity,
+    ];
+    test.each(numbers)("should fallback to default no. of words with arg %p", (x) => {
+      const slug = generateSlug(x);
+      expect(slug.split("-")).toBeArrayOfSize(3);
+    });
   });
   test("generates three random kebab-cased words by default", () => {
     const slug = generateSlug();
