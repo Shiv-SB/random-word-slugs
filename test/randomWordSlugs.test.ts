@@ -1,5 +1,5 @@
 import { generateSlug, RandomWordOptions, totalUniqueSlugs } from "../index";
-import { Adjectives, Categories, getWordsByCategory, Nouns, PartsOfSpeech, wordList } from '../words';
+import { Adjectives, Categories, getWordsByCategory, isWordValid, Nouns, PartsOfSpeech, wordList } from '../words';
 import { describe, expect, test } from "bun:test";
 
 const allAdjectives: Adjectives[] = wordList.adjective.map(({ word }) => word)
@@ -62,6 +62,35 @@ describe("wordList", () => {
       const duplicates = findDuplicates(allWords);
       expect(duplicates).toBeArrayOfSize(0);
     }
+  });
+});
+
+describe("wordListSet", () => {
+  test("should contain all words", () => {
+    const categories = Object.keys(wordList) as [PartsOfSpeech];
+    for (const cat of categories) {
+      const wordListCat = wordList[cat];
+      for (const wordObj of wordListCat) {
+        const word = wordObj.word;
+        expect(isWordValid(word)).toBeTrue();
+      }
+    }
+  });
+  describe("should return false for invalid words", () => {
+    const cases: any[] = [
+      undefined,
+      "",
+      " ",
+      "\n",
+      "foo",
+      "bar",
+      " orange",
+      "orange ",
+    ];
+
+    test.each(cases)("arg %p should not be valid", (word) => {
+      expect(isWordValid(word)).toBeFalse();
+    });
   });
 });
 
