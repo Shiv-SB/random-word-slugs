@@ -1,12 +1,14 @@
-import fs from "fs";
 import { totalUniqueSlugs } from "../index";
 import { WordList, wordList } from "../words";
 
-console.log("Adding stats to README");
+console.log("Generating stats for README file");
+console.time("populate readme");
 
-// Populate slug count
+const templatePath = "./scripts/README_TEMPLATE.md";
+const templateFile = Bun.file(templatePath);
+
 const combos = totalUniqueSlugs().toLocaleString("en-US");
-const readme = fs.readFileSync("./scripts/README_TEMPLATE.md", "utf-8");
+const templateText = await templateFile.text();
 
 // Populate categories
 function listToUnique(list: WordList[keyof WordList]) {
@@ -23,10 +25,13 @@ function listToUnique(list: WordList[keyof WordList]) {
 const adjectiveCategories = listToUnique(wordList.adjective);
 const nounCategories = listToUnique(wordList.noun);
 
-const replaced = readme
+console.log("Inserting stats");
+
+const replaced = templateText
   .replace("{{uniqueCombinations}}", combos)
   .replace("{{adjectiveCategories}}", adjectiveCategories)
   .replace("{{nounCategories}}", nounCategories);
 
-// Write final README
-fs.writeFileSync("./README.md", replaced);
+console.log("Saving README file");
+await Bun.write("./README.new.md", replaced);
+console.timeEnd("populate readme");
