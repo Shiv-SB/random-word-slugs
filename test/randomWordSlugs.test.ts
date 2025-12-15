@@ -1,5 +1,5 @@
 import { generateSlug, RandomWordOptions, totalUniqueSlugs } from "../index";
-import { Adjectives, Categories, getWordsByCategory, isWordValid, Nouns, PartsOfSpeech, wordList } from '../words';
+import { Adjectives, Categories, getWordsByCategory, isWordValid, Nouns, PartsOfSpeech, wordList, wordListSet } from '../words';
 import { describe, expect, test } from "bun:test";
 
 const allAdjectives: Adjectives[] = wordList.adjective.map(({ word }) => word)

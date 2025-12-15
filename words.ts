@@ -660,7 +660,7 @@ function generateSetOfWords(): Set<AllWords> {
 }
 
 // generate a set of all words at runtime
-export const wordListSet: Set<AllWords> = generateSetOfWords();
+export const wordListSet: ReadonlySet<AllWords> = generateSetOfWords();
 
 /**
  * Checks if a given word is in the preset list of words which are

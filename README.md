@@ -2,8 +2,7 @@
 
 A handy utility to create those random word slugs (e.g., `generous-pink-biscuit`) you see all over the place.
 
-![run](https://github.com/nas5w/random-word-slugs/actions/workflows/test.yml/badge.svg)
-[![Codecov Status](https://codecov.io/gh/nas5w/random-word-slugs/branch/master/graph/badge.svg)](https://codecov.io/gh/nas5w/random-word-slugs/branch/master)
+[![Build Status](https://travis-ci.org/nas5w/random-word-slugs.svg?branch=master)](https://travis-ci.org/nas5w/random-word-slugs) [![Codecov Status](https://codecov.io/gh/nas5w/random-word-slugs/branch/master/graph/badge.svg)](https://codecov.io/gh/nas5w/random-word-slugs/branch/master)
 
 <hr />
 
@@ -21,9 +20,15 @@ Install with yarn
 yarn add random-word-slugs
 ```
 
+Install with Bun
+
+```bash
+bun add random-word-slugs
+```
+
 # Usage
 
-The `random-word-slugs` package can be used without any parameters and defaults to a three-word, kebab-cased slug. **Currently, the default configuration has 30,021,543 unique slug combinations**.
+The `random-word-slugs` package can be used without any parameters and defaults to a three-word, kebab-cased slug. **Currently, the default configuration has 29,823,708 unique slug combinations**.
 
 ```javascript
 import { generateSlug } from "random-word-slugs";
@@ -161,3 +166,72 @@ console.log(totalSlugs);
 ```
 
 Again, this `1000` is just an example. Importantly, this could help you determine that you're not comfortable with this limited combinatoric space and you can choose to add additional categories.
+
+## Utilities
+
+To see if a given word is includes in the preset list of words (regardless of category):
+
+```typescript
+import { isWordValid } from "random-word-slugs";
+
+const words = [
+  "rapid",
+  "quaint",
+  "foo",
+  "bar",
+];
+
+words.forEach((word) => {
+  console.log(isWordValid(word));
+})
+
+// Prints:
+true
+true
+false
+false
+```
+
+To access all words as a Set:
+
+```typescript
+import { wordListSet } from "random-word-slugs";
+
+wordListSet.size;
+wordListSet.forEach(...)
+```
+
+## Development & Contributing
+
+### Development
+
+[Bun](https://bun.sh/docs) is used for the test runner and package manager. See Bun docs on how to install for your OS.
+
+To install dependencies:
+```bash
+bun i
+```
+
+To generate the `dist` directory with the built `.js` and `.d.ts` files:
+```bash
+bun prepublish
+```
+
+### Testing
+
+To run tests
+```bash
+bun test
+
+# or in watch mode:
+bun test --watch
+```
+
+See the `bunfig.toml` file for the configured global test options.
+
+### README
+
+Do not edit the `README.md` file directly. Instead edit `scripts/README_TEMPLATE.md`, and then run:
+```bash
+bun populate-readme
+```
