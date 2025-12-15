@@ -640,9 +640,38 @@ export type WordList = typeof wordList;
 export type Nouns = WordList["noun"][number]["word"];
 export type Adjectives = WordList["adjective"][number]["word"];
 
+type AllWords = Nouns | Adjectives;
+
 export type Categories = {
   [K in keyof WordList]: WordList[K][number]["categories"][number];
 };
+
+function generateSetOfWords(): Set<AllWords> {
+  const allWords = new Set<AllWords>();
+  const categories = Object.keys(wordList) as [PartsOfSpeech];
+  for (const cat of categories) {
+    const words = getWordsByCategory(cat);
+    const len = words.length;
+    for (let i = 0; i < len; i++) {
+      allWords.add(words[i]);
+    }
+  }
+  return allWords;
+}
+
+// generate a set of all words at runtime
+export const wordListSet: Set<AllWords> = generateSetOfWords();
+
+/**
+ * Checks if a given word is in the preset list of words which are
+ * used to generate slugs.
+ *
+ * @param {string} word 
+ * @returns {word is AllWords} 
+ */
+export function isWordValid(word: string): word is AllWords {
+  return wordListSet.has(word as AllWords);
+}
 
 export function getWordsByCategory<P extends PartsOfSpeech>(
   partOfSpeech: P,
