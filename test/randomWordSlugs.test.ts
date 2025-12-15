@@ -19,16 +19,16 @@ function checkWordInCategories<P extends PartsOfSpeech>(
 }
 
 const findDuplicates = <T>(arr: T[]): T[] => {
-    let seen = new Set<T>();
-    let duplicates = new Set<T>();
-    for (let num of arr) {
-        if (seen.has(num)) {
-            duplicates.add(num);
-        }
-        seen.add(num);
+  let seen = new Set<T>();
+  let duplicates = new Set<T>();
+  for (let num of arr) {
+    if (seen.has(num)) {
+      duplicates.add(num);
     }
-    
-    return [...duplicates];
+    seen.add(num);
+  }
+
+  return [...duplicates];
 };
 
 describe("wordList", () => {
@@ -61,6 +61,14 @@ describe("wordList", () => {
       const allWords = getWordsByCategory(cat as PartsOfSpeech);
       const duplicates = findDuplicates(allWords);
       expect(duplicates).toBeArrayOfSize(0);
+    }
+  });
+  test("should be sorted alphabetically", () => {
+    for (const cat of categories) {
+      const wordListCat = wordList[cat];
+      const unsorted: string[] = wordListCat.map(wordObj => wordObj.word);
+      const sorted = [...unsorted].sort();
+      expect(unsorted).toStrictEqual(sorted);
     }
   });
 });
@@ -97,13 +105,13 @@ describe("wordListSet", () => {
     wordListSet.forEach((word) => {
       expect(validString.test(word)).toBeTrue();
     });
-  })
+  });
 });
 
 describe("generateSlug", () => {
   describe("generates n random kebab-cased words by default", () => {
     const limit = 10;
-    const arr = Array.from({length: limit}, (_, i) => i + 1); // 1, 2, ...
+    const arr = Array.from({ length: limit }, (_, i) => i + 1); // 1, 2, ...
 
     test.each(arr)("should generate slug with %p words", (i) => {
       const slug = generateSlug(i);
