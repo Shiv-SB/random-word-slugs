@@ -1,5 +1,5 @@
 import { generateSlug, RandomWordOptions, totalUniqueSlugs } from "../index";
-import { Adjectives, Categories, Nouns, PartsOfSpeech, wordList } from "../words";
+import { Adjectives, Categories, getWordsByCategory, Nouns, PartsOfSpeech, wordList } from '../words';
 import { describe, expect, it, test } from "bun:test";
 
 const allAdjectives: Adjectives[] = wordList.adjective.map(({ word }) => word)
@@ -18,33 +18,49 @@ function checkWordInCategories<P extends PartsOfSpeech>(
   return entry.categories.some(cat => cats.has(cat));
 }
 
-describe("wordList", () => {
-  // TODO: generalize this for any word types
-  it("has no repeats", () => {
-    const { noun, adjective } = wordList;
-    const allNouns = new Set<string>();
-    const repeats: {
-      noun: string[];
-      adjective: string[];
-    } = { noun: [], adjective: [] };
-    noun.forEach(({ word }) => {
-      if (allNouns.has(word)) {
-        repeats.noun.push(word);
-      } else {
-        allNouns.add(word);
-      }
-    });
-    const allAdjectives = new Set<string>();
-    adjective.forEach(({ word }) => {
-      if (allAdjectives.has(word)) {
-        repeats.adjective.push(word);
-      } else {
-        allAdjectives.add(word);
-      }
-    });
+const findDuplicates = <T>(arr: T[]): T[] => {
+    let seen = new Set<T>();
+    let duplicates = new Set<T>();
+    for (let num of arr) {
+        if (seen.has(num)) {
+            duplicates.add(num);
+        }
+        seen.add(num);
+    }
+    
+    return [...duplicates];
+};
 
-    if (repeats.noun.length || repeats.adjective.length) {
-      throw new Error(`Some words are repeated: ${JSON.stringify(repeats)}`);
+describe("wordList", () => {
+  const categories = Object.keys(wordList) as [PartsOfSpeech];
+  test("has the correct structure", () => {
+    expect(categories).toBeArray();
+
+    // For every cat ("noun, etc")...
+    for (const cat of categories) {
+      // ...get the child object which is a list of
+      // an object containing the word and the category...
+      const wordListCat = wordList[cat];
+      expect(wordListCat).toBeArray();
+      expect(wordListCat).not.toBeEmpty();
+
+      // ...and then for each object in that above child object...
+      for (const wordObj of wordListCat) {
+        // ... check that the "word" and "categories" props are valid.
+        expect(wordObj).toBeObject();
+        const { categories, word } = wordObj;
+        expect(categories).toBeArray();
+        expect(categories).not.toBeEmpty();
+        expect(word).toBeString();
+        expect(word).not.toBeEmpty();
+      }
+    }
+  });
+  test("has no repeat words", () => {
+    for (const cat of categories) {
+      const allWords = getWordsByCategory(cat as PartsOfSpeech);
+      const duplicates = findDuplicates(allWords);
+      expect(duplicates).toBeArrayOfSize(0);
     }
   });
 });
