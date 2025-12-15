@@ -26,7 +26,7 @@ export type RandomWordOptions<N extends number> = Partial<
 export function generateSlug<N extends number>(
   numberOfWords?: N,
   options?: Partial<Options<PartsOfSpeech, N>>
-) {
+): string {
   const numWords = numberOfWords || DEFAULT_NUMBER_OF_WORDS;
   const defaultOptions: Options<PartsOfSpeech, typeof numWords> = {
     partsOfSpeech: getDefaultPartsOfSpeech(numWords),
@@ -71,8 +71,10 @@ export function getRandomInt(min: number, max: number): number {
 }
 
 
-function getDefaultPartsOfSpeech<N extends number>(length: N) {
-  const partsOfSpeech = [];
+function getDefaultPartsOfSpeech<
+  N extends number
+>(length: N): FixedLengthArray<"noun" | "adjective", N> {
+  const partsOfSpeech: ("noun" | "adjective")[] = [];
   for (let i = 0; i < length - 1; i++) {
     partsOfSpeech.push("adjective");
   }
@@ -80,43 +82,39 @@ function getDefaultPartsOfSpeech<N extends number>(length: N) {
   return partsOfSpeech as FixedLengthArray<PartsOfSpeech, N>;
 }
 
-function formatter(arr: string[], format: Case) {
-  if (format === "kebab") {
-    return arr.join("-").toLowerCase();
-  }
-  if (format === "camel") {
-    return arr
-      .map((el, i) => {
-        if (i === 0) return el.toLowerCase();
-        return el[0].toUpperCase() + el.slice(1).toLowerCase();
-      })
-      .join("");
-  }
-  if (format === "lower") {
-    return arr.join(" ").toLowerCase();
-  }
-  if (format === "sentence") {
-    return arr
-      .map((el, i) => {
-        if (i === 0) {
+function formatter(arr: string[], format: Case): string {
+  switch (format) {
+    case "kebab":
+      return arr.join("-").toLocaleLowerCase();
+    case "camel":
+      return arr
+        .map((el, i) => {
+          if (i === 0) return el.toLowerCase();
           return el[0].toUpperCase() + el.slice(1).toLowerCase();
-        }
-        return el;
-      })
-      .join(" ");
+        })
+        .join("");
+    case "lower":
+      return arr.join(" ").toLowerCase();
+    case "sentence":
+      return arr
+        .map((el, i) => {
+          if (i === 0) {
+            return el[0].toUpperCase() + el.slice(1).toLowerCase();
+          }
+          return el;
+        })
+        .join(" ");
+    default:
+      return arr
+        .map((el) => el[0].toUpperCase() + el.slice(1).toLowerCase())
+        .join(" ");
   }
-
-  return arr
-    .map((el) => {
-      return el[0].toUpperCase() + el.slice(1).toLowerCase();
-    })
-    .join(" ");
 }
 
 export function totalUniqueSlugs<N extends number>(
   numberOfWords?: N,
   options?: RandomWordOptions<N>
-) {
+): number {
   const numAdjectives = getWordsByCategory(
     "adjective",
     options?.categories?.adjective
