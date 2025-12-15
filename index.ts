@@ -85,6 +85,7 @@ function getDefaultPartsOfSpeech<
 function formatter(arr: string[], format: Case): string {
   switch (format) {
     case "kebab":
+    default:
       return arr.join("-").toLocaleLowerCase();
     case "camel":
       return arr
@@ -104,7 +105,7 @@ function formatter(arr: string[], format: Case): string {
           return el;
         })
         .join(" ");
-    default:
+    case "title":
       return arr
         .map((el) => el[0].toUpperCase() + el.slice(1).toLowerCase())
         .join(" ");

@@ -90,6 +90,12 @@ describe("generateSlug", () => {
     expect(allAdjectives).toContain<Nouns>(parts[1]);
     expect(allNouns).toContain<Nouns>(parts[2]);
   });
+  test("defaults to kebab-cases given invalid format string", () => {
+    // @ts-ignore using incorrect arg for testing
+    const slug = generateSlug(undefined, { format: "foo!" });
+    const parts = slug.split("-");
+    expect(parts).toBeArrayOfSize(3);
+  });
   test("allows user to specify word categories", () => {
     const options: RandomWordOptions<3> = {
       categories: {
