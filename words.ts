@@ -1,5 +1,3 @@
-export type PartsOfSpeech = keyof typeof wordList;
-
 export const wordList = {
   noun: [
     { word: "ability", categories: ["thing"] },
@@ -636,10 +634,10 @@ export const wordList = {
   ] as const,
 };
 
+export type PartsOfSpeech = keyof typeof wordList;
 export type WordList = typeof wordList;
 export type Nouns = WordList["noun"][number]["word"];
 export type Adjectives = WordList["adjective"][number]["word"];
-
 type AllWords = Nouns | Adjectives;
 
 export type Categories = {
